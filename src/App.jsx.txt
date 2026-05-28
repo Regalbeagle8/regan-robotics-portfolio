@@ -1,0 +1,746 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  ArrowUp,
+  Award,
+  Bot,
+  Code2,
+  ExternalLink,
+  GraduationCap,
+  Lightbulb,
+  Mail,
+  Menu,
+  Rocket,
+  School,
+  Trophy,
+  Users,
+  Wrench,
+  X,
+} from "lucide-react";
+
+function Button({ children, className = "", variant = "default", ...props }) {
+  const base =
+    "inline-flex items-center justify-center rounded-full font-semibold transition focus:outline-none focus:ring-2 focus:ring-sky-300 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:pointer-events-none disabled:opacity-50";
+  const styles =
+    variant === "outline"
+      ? "border border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-sky-200"
+      : "bg-sky-400 text-slate-950 hover:bg-sky-300";
+  return (
+    <button className={`${base} ${styles} ${className}`} {...props}>
+      {children}
+    </button>
+  );
+}
+
+function Card({ children, className = "" }) {
+  return <div className={`rounded-2xl ${className}`}>{children}</div>;
+}
+
+function CardContent({ children, className = "" }) {
+  return <div className={className}>{children}</div>;
+}
+
+const sections = [
+  { id: "home", label: "Home" },
+  { id: "about", label: "About Me" },
+  { id: "leadership", label: "Robotics Leadership" },
+  { id: "metrics", label: "Impact" },
+  { id: "timeline", label: "Timeline" },
+  { id: "projects", label: "Projects" },
+  { id: "extracurriculars", label: "Activities" },
+  { id: "experience", label: "Resume" },
+  { id: "contact", label: "Contact" },
+];
+
+const stats = [
+  { value: "45650A", label: "VEX varsity robotics team" },
+  { value: "3 Years", label: "Engineering and robotics experience" },
+  { value: "Judges Award", label: "Regional VEX competition recognition" },
+  { value: "Bronze", label: "SkillsUSA engineering finalist" },
+];
+
+const impactMetrics = [
+  {
+    value: "President",
+    label: "Robotics Club Leadership",
+    detail:
+      "Lead team organization, technical collaboration, and competition preparation as Robotics Club President.",
+  },
+  {
+    value: "Varsity Lead",
+    label: "Team 45650A",
+    detail:
+      "Guide the varsity robotics team through engineering decisions, strategy development, and performance improvement.",
+  },
+  {
+    value: "3 Years",
+    label: "Sustained STEM Involvement",
+    detail:
+      "Built robotics and engineering experience continuously from freshman year through junior year.",
+  },
+  {
+    value: "First-Time Success",
+    label: "SkillsUSA Engineering",
+    detail:
+      "Earned bronze finalist recognition during the school’s first engineering appearance at SkillsUSA.",
+  },
+];
+
+const leadershipHighlights = [
+  {
+    icon: Users,
+    title: "Grew Team Participation",
+    body:
+      "Helped expand the robotics program from a smaller group into a more active team with stronger participation and clearer roles.",
+  },
+  {
+    icon: Rocket,
+    title: "Created Varsity/JV Structure",
+    body:
+      "Organized members into A and B teams to improve focus, mentorship, practice quality, and development for newer students.",
+  },
+  {
+    icon: Wrench,
+    title: "Led Through Constraints",
+    body:
+      "Helped the team improve despite limited public school funding, shorter build time, and fewer resources than many competitors.",
+  },
+  {
+    icon: Trophy,
+    title: "Improved Competitive Results",
+    body:
+      "Supported design, strategy, and technical problem-solving that contributed to stronger competition performance, including reaching elimination rounds and earning a regional Judges Award.",
+  },
+];
+
+const timelineItems = [
+  {
+    date: "March 16, 2024",
+    phase: "Freshman Year · First Robotics Competition",
+    title: "First exposure to large-scale competitive robotics",
+    image: "/images/robotics/01-first-frc-competition.jpeg",
+    description:
+      "My first robotics competition was through FRC, where I was introduced to larger robots, real competition environments, and the teamwork required to build and maintain a functional machine under pressure.",
+  },
+  {
+    date: "August 31, 2024",
+    phase: "Sophomore Year · Growing Involvement",
+    title: "Becoming more involved in competition work",
+    image: "/images/robotics/02-sophomore-competition.jpeg",
+    description:
+      "During sophomore year, I became more involved with the technical and competitive side of robotics, gaining experience around pit work, robot systems, troubleshooting, and team collaboration.",
+  },
+  {
+    date: "March 14, 2025",
+    phase: "Sophomore Year · Technical Development",
+    title: "Building deeper hands-on engineering experience",
+    image: "/images/robotics/03-sophomore-technical-growth.jpeg",
+    description:
+      "This competition helped me continue developing a stronger understanding of robot mechanisms, competition preparation, and the importance of hands-on iteration before stepping into a formal leadership role.",
+  },
+  {
+    date: "December 15, 2025",
+    phase: "Junior Year · Robotics Club President",
+    title: "Starting VEX and building with new materials",
+    image: "/images/robotics/04-first-vex-base-bot.jpeg",
+    description:
+      "After becoming Robotics Club President, I helped lead our transition into VEX robotics. This partially finished base bot was our first major build using VEX materials and helped establish the foundation for our new competition program.",
+  },
+  {
+    date: "January 10, 2026",
+    phase: "Junior Year · First VEX Competition",
+    title: "Testing the base bot and scouting improvements",
+    image: "/images/robotics/05-first-vex-competition.jpeg",
+    description:
+      "At our first VEX competition, we used the base bot to learn what worked, what struggled, and what stronger teams were doing. The event became a scouting and testing opportunity that shaped our next design decisions.",
+  },
+  {
+    date: "January 30, 2026",
+    phase: "Junior Year · Second Iteration",
+    title: "Redesigning after early competition struggles",
+    image: "/images/robotics/06-second-iteration.jpeg",
+    description:
+      "After placing low with the base bot, we redesigned the robot with a different intake and game-piece movement system. This marked a shift from simply building to analyzing weaknesses and improving performance through iteration.",
+  },
+  {
+    date: "February 9, 2026",
+    phase: "Junior Year · Third Iteration",
+    title: "Refining the intake and transfer system",
+    image: "/images/robotics/07-third-iteration.jpeg",
+    description:
+      "The third iteration focused on improving earlier designs, increasing consistency, and refining how game pieces moved through the robot. This stage showed the engineering design process in action: test, analyze, redesign, and repeat.",
+  },
+  {
+    date: "February 14, 2026",
+    phase: "Junior Year · Competition Improvement",
+    title: "Improved performance and reached elimination matches",
+    image: "/images/robotics/08-elimination-matches.jpeg",
+    description:
+      "With the finished third iteration, our team performed much better and reached elimination matches. This milestone showed that our redesign process, testing, and strategy improvements were producing real results.",
+  },
+  {
+    date: "Spring 2026",
+    phase: "Junior Year · Full System Rebuild",
+    title: "Scrapping old designs and rebuilding for efficiency",
+    image: "/images/robotics/09-full-rebuild.jpeg",
+    description:
+      "Eventually, we fully scrapped the old robot designs and rebuilt around a more efficient system architecture. This was a major engineering decision focused on improving consistency, speed, and overall robot performance.",
+  },
+  {
+    date: "April 7, 2026",
+    phase: "SkillsUSA · Team Representation",
+    title: "Representing Skyline Robotics at SkillsUSA",
+    image: "/images/robotics/10-skillsusa-day-one.jpeg",
+    description:
+      "Our team represented Skyline Robotics at SkillsUSA during the school’s first time competing in engineering. This experience expanded our robotics work into a professional statewide competition environment.",
+  },
+  {
+    date: "April 7, 2026",
+    phase: "SkillsUSA · Mobile Robotics Technology",
+    title: "Combining programming, mechanics, and competition strategy",
+    image: "/images/robotics/11-skillsusa-programming.jpeg",
+    description:
+      "During SkillsUSA Mobile Robotics Technology, we worked with both the robot and programming systems in a live competition setting, combining mechanical design, software, troubleshooting, and strategy.",
+  },
+  {
+    date: "April 8, 2026",
+    phase: "SkillsUSA · Bronze Finalists",
+    title: "First-time SkillsUSA engineering appearance with bronze recognition",
+    image: "/images/robotics/12-skillsusa-bronze.jpeg",
+    description:
+      "In our school’s first time competing in SkillsUSA engineering, our team left with bronze finalist recognition. This became a major result from months of iteration, rebuilding, and teamwork.",
+  },
+  {
+    date: "April 30, 2026",
+    phase: "Club Culture · Team Recognition",
+    title: "Celebrating individual growth and team culture",
+    image: "/images/robotics/13-club-awards.jpeg",
+    description:
+      "At the end of the season, we recognized individual club members and celebrated the team culture we built. This moment reflects the leadership side of robotics: creating a stronger, more supportive program for others.",
+  },
+];
+
+const projects = [
+  {
+    icon: Bot,
+    title: "VEX Robot Design Portfolio",
+    tag: "Robotics / Mechanical Design",
+    body:
+      "A documented breakdown of drivetrain choices, intake concepts, lift mechanisms, CAD planning, and design tradeoffs.",
+    link: "View project notes",
+  },
+  {
+    icon: Code2,
+    title: "Autonomous Programming Log",
+    tag: "Programming / Problem Solving",
+    body:
+      "A project card for autonomous code experiments, sensor testing, route planning, debugging notes, and match improvements.",
+    link: "Explore code work",
+  },
+  {
+    icon: Lightbulb,
+    title: "Robotics Strategy Resource",
+    tag: "Leadership / Education",
+    body:
+      "A public-facing resource explaining competition strategy, scouting, team organization, and lessons learned from VEX robotics.",
+    link: "Open resource",
+  },
+];
+
+const extracurriculars = [
+  {
+    title: "National Honor Society",
+    years: "2026 – Present",
+    description:
+      "Participate in community service initiatives while maintaining strong academic performance and leadership involvement.",
+  },
+  {
+    title: "Model United Nations",
+    years: "2025 – Present",
+    description:
+      "Develop diplomacy, research, public speaking, and collaboration skills through global issue debates and policy discussions.",
+  },
+  {
+    title: "High School Ambassador",
+    years: "2026 – Present",
+    description:
+      "Represent Skyline High School during events, tours, and student outreach opportunities for incoming families and students.",
+  },
+  {
+    title: "Student Advisory Council",
+    years: "2026 – Present",
+    description:
+      "Collaborate with school leadership to provide student feedback and contribute ideas for school improvement.",
+  },
+  {
+    title: "Krazy Subs Team Member",
+    years: "2025 – Present",
+    description:
+      "Balance academics and extracurricular leadership while working in a fast-paced customer service environment focused on teamwork and responsibility.",
+  },
+];
+
+const experience = [
+  {
+    role: "Robotics Club President & Varsity Team Lead",
+    org: "VEX Robotics Team 45650A",
+    date: "Current",
+    points: [
+      "Lead club organization, competition preparation, and technical brainstorming as Robotics Club President and Varsity Team Lead.",
+      "Helped build a clearer varsity and JV structure to support both experienced and developing members.",
+      "Guide teammates through engineering tradeoffs, design decisions, programming challenges, and competition strategy.",
+    ],
+  },
+  {
+    role: "Engineering Student",
+    org: "STEM / Robotics / Design Projects",
+    date: "Ongoing",
+    points: [
+      "Developing skills in mechanical design, CAD thinking, robotics systems, and programming logic.",
+      "Focused on practical engineering: testing, iteration, documentation, and performance improvement.",
+    ],
+  },
+];
+
+function scrollToSection(id) {
+  const target = document.getElementById(id);
+  if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function SectionHeading({ eyebrow, title, children }) {
+  return (
+    <div className="mx-auto mb-12 max-w-3xl text-center">
+      <p className="mb-3 text-sm font-semibold uppercase tracking-[0.24em] text-sky-400">
+        {eyebrow}
+      </p>
+      <h2 className="text-3xl font-bold tracking-tight text-white md:text-5xl">{title}</h2>
+      {children && <p className="mt-5 text-base leading-8 text-slate-300 md:text-lg">{children}</p>}
+    </div>
+  );
+}
+
+function App() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [active, setActive] = useState("home");
+  const [showTop, setShowTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setShowTop(window.scrollY > 550);
+      const current = sections
+        .map((section) => {
+          const el = document.getElementById(section.id);
+          if (!el) return { id: section.id, distance: Infinity };
+          return { id: section.id, distance: Math.abs(el.getBoundingClientRect().top - 120) };
+        })
+        .sort((a, b) => a.distance - b.distance)[0];
+      if (current) setActive(current.id);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const fadeUp = useMemo(
+    () => ({
+      initial: { opacity: 0, y: 28 },
+      whileInView: { opacity: 1, y: 0 },
+      viewport: { once: true, amount: 0.25 },
+      transition: { duration: 0.65, ease: "easeOut" },
+    }),
+    []
+  );
+
+  return (
+    <div className="min-h-screen scroll-smooth bg-[#07111f] font-sans text-slate-100 selection:bg-sky-400/30">
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.18),transparent_32%),radial-gradient(circle_at_75%_15%,rgba(148,163,184,0.12),transparent_28%),linear-gradient(180deg,#07111f_0%,#0b1220_45%,#050814_100%)]" />
+
+      <header className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-slate-950/75 backdrop-blur-xl">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8" aria-label="Main navigation">
+          <button
+            onClick={() => scrollToSection("home")}
+            className="group flex items-center gap-3 text-left"
+            aria-label="Back to homepage"
+          >
+            <span className="grid h-10 w-10 place-items-center rounded-2xl border border-sky-300/30 bg-sky-400/10 text-sky-300 shadow-lg shadow-sky-950/40 transition group-hover:scale-105">
+              <Bot size={22} />
+            </span>
+            <span>
+              <span className="block text-sm font-bold tracking-wide text-white">Regan I. Owen</span>
+              <span className="block text-xs text-slate-400">Robotics · Engineering · Leadership</span>
+            </span>
+          </button>
+
+          <div className="hidden items-center gap-1 lg:flex">
+            {sections.map((section) => (
+              <button
+                key={section.id}
+                onClick={() => scrollToSection(section.id)}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition hover:bg-white/10 hover:text-sky-300 ${
+                  active === section.id ? "bg-sky-400/10 text-sky-300" : "text-slate-300"
+                }`}
+              >
+                {section.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="hidden lg:block">
+            <Button
+              onClick={() => scrollToSection("contact")}
+              className="px-5 py-2 text-sm"
+            >
+              Contact Me
+            </Button>
+          </div>
+
+          <button
+            className="rounded-xl border border-white/10 p-2 text-slate-200 lg:hidden"
+            onClick={() => setMenuOpen((value) => !value)}
+            aria-label="Open navigation menu"
+          >
+            {menuOpen ? <X /> : <Menu />}
+          </button>
+        </nav>
+
+        {menuOpen && (
+          <div className="border-t border-white/10 bg-slate-950/95 px-5 py-4 lg:hidden">
+            <div className="grid gap-2">
+              {sections.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => {
+                    scrollToSection(section.id);
+                    setMenuOpen(false);
+                  }}
+                  className={`rounded-xl px-4 py-3 text-left text-sm font-medium transition ${
+                    active === section.id
+                      ? "bg-sky-400/10 text-sky-300"
+                      : "text-slate-300 hover:bg-white/10"
+                  }`}
+                >
+                  {section.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </header>
+
+      <main>
+        <section id="home" className="relative px-5 pb-20 pt-36 md:px-8 md:pb-28 md:pt-44">
+          <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.08fr_0.92fr]">
+            <motion.div {...fadeUp}>
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-sky-300/10 px-4 py-2 text-sm font-medium text-sky-200">
+                <GraduationCap size={16} />
+                Built for admissions officers, mentors, and engineering opportunities
+              </div>
+              <h1 className="max-w-4xl text-4xl font-black tracking-tight text-white md:text-6xl lg:text-7xl">
+                Robotics club president building better systems through engineering, leadership, and innovation.
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 md:text-xl">
+                I am a high school engineering student, Robotics Club President, and Varsity Team Lead for VEX Robotics Team 45650A. I focus on design, programming, team growth, and solving real engineering problems with limited resources.
+              </p>
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <Button
+                  onClick={() => scrollToSection("projects")}
+                  className="px-7 py-6 text-base font-bold"
+                >
+                  View My Projects
+                  <ExternalLink className="ml-2" size={18} />
+                </Button>
+                <Button
+                  onClick={() => scrollToSection("leadership")}
+                  variant="outline"
+                  className="px-7 py-6 text-base font-bold"
+                >
+                  See Leadership Impact
+                </Button>
+              </div>
+            </motion.div>
+
+            <motion.div
+              {...fadeUp}
+              transition={{ duration: 0.75, delay: 0.1, ease: "easeOut" }}
+              className="relative"
+            >
+              <div className="absolute -inset-4 rounded-[2.5rem] bg-sky-400/10 blur-2xl" />
+              <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-slate-900/80 shadow-2xl shadow-sky-950/50">
+                <div className="aspect-[4/3] bg-[linear-gradient(135deg,rgba(14,165,233,0.25),rgba(15,23,42,0.95)),url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center" />
+                <div className="grid gap-4 p-6 sm:grid-cols-2">
+                  {stats.map((stat) => (
+                    <div key={stat.label} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                      <p className="text-2xl font-black text-sky-300">{stat.value}</p>
+                      <p className="mt-1 text-sm leading-5 text-slate-300">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        <section id="about" className="px-5 py-20 md:px-8 md:py-28">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeading eyebrow="About Me" title="A student engineer with a leadership-first mindset.">
+              This site is designed so a first-time visitor can quickly understand who I am, what I build, how I lead, and why my work matters.
+            </SectionHeading>
+
+            <motion.div {...fadeUp} className="grid gap-6 lg:grid-cols-3">
+              <Card className="border-white/10 bg-white/[0.04] text-slate-100 lg:col-span-2">
+                <CardContent className="p-7 md:p-9">
+                  <h3 className="text-2xl font-bold text-white">My focus</h3>
+                  <p className="mt-4 leading-8 text-slate-300">
+                    I am interested in robotics, mechanical design, programming, and engineering systems that improve through testing and iteration. As robotics president, I focus on more than building a robot. I work on building a team culture where students learn faster, communicate clearly, and solve technical problems together.
+                  </p>
+                  <div className="mt-7 grid gap-3 sm:grid-cols-3">
+                    {["Engineering mindset", "Technical curiosity", "Clear communication"].map((item) => (
+                      <div key={item} className="rounded-2xl border border-white/10 bg-slate-950/50 p-4 text-sm font-semibold text-slate-200">
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-sky-300/20 bg-sky-400/10 text-slate-100">
+                <CardContent className="p-7 md:p-9">
+                  <School className="mb-5 text-sky-300" size={34} />
+                  <h3 className="text-2xl font-bold text-white">What makes my story different</h3>
+                  <p className="mt-4 leading-8 text-slate-300">
+                    My robotics work comes from a public school environment with limited funding. Success depends on resourcefulness, efficient iteration, teamwork, and smart engineering decisions under pressure.
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </section>
+
+        <section id="leadership" className="border-y border-white/10 bg-slate-950/45 px-5 py-20 md:px-8 md:py-28">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeading eyebrow="Robotics Leadership" title="Building stronger teams, not just stronger robots.">
+              My leadership story centers on growth, organization, technical problem-solving, and improving performance despite limited resources.
+            </SectionHeading>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {leadershipHighlights.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div key={item.title} {...fadeUp} transition={{ duration: 0.6, delay: index * 0.05 }}>
+                    <Card className="h-full border border-white/10 bg-white/[0.04] text-slate-100 transition hover:-translate-y-1 hover:border-sky-300/40 hover:bg-white/[0.07]">
+                      <CardContent className="p-7">
+                        <div className="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-sky-400/10 text-sky-300">
+                          <Icon size={28} />
+                        </div>
+                        <h3 className="text-xl font-bold text-white">{item.title}</h3>
+                        <p className="mt-3 leading-7 text-slate-300">{item.body}</p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section id="metrics" className="px-5 py-20 md:px-8 md:py-28">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeading eyebrow="Impact Metrics" title="Leadership, growth, and engineering impact at a glance.">
+              These highlights are designed so admissions officers and mentors can quickly understand my leadership, technical involvement, and long-term commitment.
+            </SectionHeading>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {impactMetrics.map((metric, index) => (
+                <motion.div key={metric.label} {...fadeUp} transition={{ duration: 0.6, delay: index * 0.06 }}>
+                  <Card className="h-full border border-white/10 bg-white/[0.04] text-slate-100 transition hover:-translate-y-1 hover:border-sky-300/40 hover:bg-white/[0.07]">
+                    <CardContent className="p-7">
+                      <p className="text-3xl font-black text-sky-300">{metric.value}</p>
+                      <h3 className="mt-4 text-lg font-bold text-white">{metric.label}</h3>
+                      <p className="mt-3 text-sm leading-6 text-slate-300">{metric.detail}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="timeline" className="border-y border-white/10 bg-slate-950/45 px-5 py-20 md:px-8 md:py-28">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeading eyebrow="Robotics Timeline" title="From first competition to leading a growing robotics program.">
+              This timeline shows my progression from joining robotics as a freshman to leading VEX development, redesign cycles, competition improvements, and team recognition as Robotics Club President.
+            </SectionHeading>
+
+            <div className="grid gap-8">
+              {timelineItems.map((item, index) => (
+                <motion.article
+                  key={`${item.date}-${item.title}`}
+                  {...fadeUp}
+                  transition={{ duration: 0.65, delay: Math.min(index * 0.03, 0.18) }}
+                  className={`grid gap-6 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] shadow-xl shadow-slate-950/20 lg:grid-cols-2 ${
+                    index % 2 === 1 ? "lg:[&>div:first-child]:order-2" : ""
+                  }`}
+                >
+                  <div className="relative h-[400px] overflow-hidden bg-slate-900">
+                    <img
+                      src={item.image}
+                      alt={`${item.title} — ${item.date}`}
+                      className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                    />
+                    <div className="absolute left-5 top-5 rounded-full border border-white/15 bg-slate-950/75 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-sky-200 backdrop-blur-md">
+                      {item.date}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col justify-center p-7 md:p-10">
+                    <p className="text-sm font-semibold uppercase tracking-[0.22em] text-sky-400">{item.phase}</p>
+                    <h3 className="mt-4 text-2xl font-black tracking-tight text-white md:text-3xl">{item.title}</h3>
+                    <p className="mt-5 text-base leading-8 text-slate-300">{item.description}</p>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="projects" className="px-5 py-20 md:px-8 md:py-28">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeading eyebrow="Projects" title="Technical work presented clearly.">
+              Replace these sample cards with real project photos, CAD screenshots, code repositories, design notes, and competition documentation.
+            </SectionHeading>
+
+            <div className="grid gap-6 lg:grid-cols-3">
+              {projects.map((project, index) => {
+                const Icon = project.icon;
+                return (
+                  <motion.div key={project.title} {...fadeUp} transition={{ duration: 0.6, delay: index * 0.08 }}>
+                    <Card className="group h-full overflow-hidden border border-white/10 bg-white/[0.04] text-slate-100 transition hover:-translate-y-1 hover:border-sky-300/40 hover:bg-white/[0.07]">
+                      <div className="h-40 bg-[linear-gradient(135deg,rgba(14,165,233,0.22),rgba(15,23,42,0.96)),url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80')] bg-cover bg-center" />
+                      <CardContent className="p-7">
+                        <div className="mb-5 flex items-center justify-between gap-4">
+                          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-sky-400/10 text-sky-300">
+                            <Icon size={25} />
+                          </div>
+                          <span className="rounded-full border border-white/10 bg-slate-950/70 px-3 py-1 text-xs font-semibold text-slate-300">
+                            {project.tag}
+                          </span>
+                        </div>
+                        <h3 className="text-xl font-bold text-white">{project.title}</h3>
+                        <p className="mt-3 leading-7 text-slate-300">{project.body}</p>
+                        <button className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-sky-300 transition group-hover:gap-3">
+                          {project.link}
+                          <ExternalLink size={16} />
+                        </button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section id="extracurriculars" className="border-y border-white/10 bg-slate-950/45 px-5 py-20 md:px-8 md:py-28">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeading eyebrow="Extracurriculars" title="Leadership and involvement beyond robotics.">
+              These experiences helped strengthen communication, collaboration, leadership, and adaptability across technical and non-technical environments.
+            </SectionHeading>
+
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {extracurriculars.map((activity, index) => (
+                <motion.div key={activity.title} {...fadeUp} transition={{ duration: 0.6, delay: index * 0.05 }}>
+                  <Card className="h-full border border-white/10 bg-white/[0.04] text-slate-100 transition hover:-translate-y-1 hover:border-sky-300/40 hover:bg-white/[0.07]">
+                    <CardContent className="p-7">
+                      <div className="flex items-start justify-between gap-4">
+                        <h3 className="text-xl font-bold text-white">{activity.title}</h3>
+                        <span className="whitespace-nowrap rounded-full border border-white/10 bg-slate-950/70 px-3 py-1 text-xs font-semibold text-slate-300">
+                          {activity.years}
+                        </span>
+                      </div>
+                      <p className="mt-4 leading-7 text-slate-300">{activity.description}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="experience" className="px-5 py-20 md:px-8 md:py-28">
+          <div className="mx-auto max-w-5xl">
+            <SectionHeading eyebrow="Resume / Experience" title="Experience built around impact.">
+              This section helps admissions officers and mentors quickly scan leadership, technical experience, and growth.
+            </SectionHeading>
+
+            <div className="grid gap-6">
+              {experience.map((item, index) => (
+                <motion.div key={item.role} {...fadeUp} transition={{ duration: 0.6, delay: index * 0.08 }}>
+                  <Card className="border border-white/10 bg-white/[0.04] text-slate-100">
+                    <CardContent className="p-7 md:p-9">
+                      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                        <div>
+                          <h3 className="text-2xl font-bold text-white">{item.role}</h3>
+                          <p className="mt-1 text-sky-300">{item.org}</p>
+                        </div>
+                        <span className="w-fit rounded-full border border-white/10 bg-slate-950/70 px-4 py-2 text-sm font-semibold text-slate-300">
+                          {item.date}
+                        </span>
+                      </div>
+                      <ul className="mt-6 grid gap-3 text-slate-300">
+                        {item.points.map((point) => (
+                          <li key={point} className="flex gap-3 leading-7">
+                            <Award className="mt-1 shrink-0 text-sky-300" size={18} />
+                            <span>{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" className="px-5 py-20 md:px-8 md:py-28">
+          <motion.div {...fadeUp} className="mx-auto max-w-4xl rounded-[2rem] border border-sky-300/20 bg-sky-400/10 p-8 text-center shadow-2xl shadow-sky-950/30 md:p-12">
+            <Mail className="mx-auto mb-5 text-sky-300" size={42} />
+            <h2 className="text-3xl font-black text-white md:text-5xl">Let’s connect.</h2>
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-300">
+              For robotics, engineering opportunities, mentorship, admissions review, or project collaboration, contact me using the information below.
+            </p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <a href="mailto:regan.ai.owen@gmail.com?subject=Engineering%20Opportunity%20%7C%20Regan%20I.%20Owen">
+                <Button className="px-7 py-6 text-base font-bold">
+                  regan.ai.owen@gmail.com
+                </Button>
+              </a>
+              <a href="https://drive.google.com/file/d/1RK68sdqAiYH4rBqF7lCwp-CYNT2qMUeC/view?usp=sharing">
+                <Button variant="outline" className="px-7 py-6 text-base font-bold">
+                  Open Resume
+                </Button>
+              </a>
+            </div>
+          </motion.div>
+        </section>
+      </main>
+
+      <footer className="border-t border-white/10 px-5 py-8 text-center text-sm text-slate-400 md:px-8">
+        <p>© 2026 Regan I. Owen. Robotics, engineering, and leadership portfolio.</p>
+      </footer>
+
+      {showTop && (
+        <button
+          onClick={() => scrollToSection("home")}
+          className="fixed bottom-6 right-6 z-50 grid h-12 w-12 place-items-center rounded-full border border-sky-300/30 bg-sky-400 text-slate-950 shadow-xl shadow-sky-950/40 transition hover:-translate-y-1 hover:bg-sky-300"
+          aria-label="Back to top"
+        >
+          <ArrowUp size={22} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+export default App;
